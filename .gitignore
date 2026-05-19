@@ -1,0 +1,6 @@
+# logs
+*.mk
+*.log
+
+# binaries
+provision
