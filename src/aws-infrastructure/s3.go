@@ -124,6 +124,17 @@ func (app *Application) S3_Provision() {
 }
 
 func (app *Application) S3_Report() {
+	var err error
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	_, err = app.S3_ListBuckets(ctx, app.region)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to list buckets: %v", err)
+		os.Exit(1)
+	}
+
 	fmt.Println("-------------------------------")
 	fmt.Println("B U C K E T S   C R E A T E D")
 	fmt.Println("-------------------------------")

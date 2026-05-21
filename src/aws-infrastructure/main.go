@@ -1,11 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"path"
-	"strings"
+	"time"
 )
 
 type Application struct {
@@ -14,18 +12,16 @@ type Application struct {
 	ods       string
 	region    string
 	teardown  bool
+	status    bool
 	buckets   []S3_bucket
 	databases []DSQL_database
 }
 
 func main() {
 	app := Application{}
-	app.printHeader()
-	app.appSetup()
-	app._logAndPrint("INFO", "Starting DowntimeApp AWS infrastructure provisioning")
-
-	flag.BoolVar(&app.teardown, "teardown", false, "un-provision the AWS infrastructure")
-	flag.Parse()
+	app._printHeader()
+	app._appSetup()
+	app._processFlags()
 
 	// define the AWS infrastructure to be
 	// provisioned & monitored by the application
@@ -41,36 +37,44 @@ func main() {
 		{Name: app.ods + "-downtimeapp-development"},
 	}
 	app.setBucketDefaults()
-
 	// E N D  O F  S E T U P
 
-	if app.teardown {
-		fmt.Println("== TEARDOWN ==")
-		app.DSQL_Teardown()
-
-		fmt.Println("== END ==")
-		app.LogFileClose()
-		os.Exit(0)
-	}
-
-	app.DSQL_Provision()
-	app.S3_Provision()
+	app.ProcessFlagOverrides()
+	app.Provision()
+	app.Report()
 
 	fmt.Println("== END ==")
 	app.LogFileClose()
 }
 
-func (app *Application) printHeader() {
-	fmt.Println()
-	fmt.Println()
-	fmt.Println("DowntimeApp AWS Infrastructure Provisioning")
-	fmt.Println("===========================================")
-	fmt.Println()
+func (app *Application) ProcessFlagOverrides() {
+	if app.status {
+		app.Report()
+	}
+
+	if app.teardown {
+		app.Teardown()
+	}
 }
 
-func (app *Application) appSetup() {
-	app.exe = path.Dir(os.Args[0])
-	app.ods = strings.ToLower(strings.TrimSpace(os.Getenv("ODS")))
-	app.teardown = false
-	app.LogFileOpen()
+func (app *Application) Provision() {
+	app.DSQL_Provision()
+	app.S3_Provision()
+}
+
+func (app *Application) Report() {
+	app._logAndPrint("INFO", "Gathering status details")
+	time.Sleep(5 * time.Second)
+
+	// app.DSQL_Report()
+	app.S3_Report()
+	app.LogFileClose()
+	os.Exit(0)
+}
+
+func (app *Application) Teardown() {
+	// app.DSQL_Teardown()
+	// app.S3_Teardown()
+	app.LogFileClose()
+	os.Exit(0)
 }

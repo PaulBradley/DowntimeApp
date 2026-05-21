@@ -199,12 +199,11 @@ func (app *Application) DSQL_Provision() {
 	for index := range app.databases {
 		if !app.databases[index].Found {
 			app._logAndPrint("INFO", "Provisioning Cluster : %s", app.databases[index].Name)
-
-			// err = app.DSQL_CreateCluster(context.Background(), app.region, app.databases[index].Name, app.databases[index].DeleteProtection)
-			// if err != nil {
-			// 	app._logAndPrint("ERROR", "Failed to create cluster: %v", err)
-			// 	os.Exit(1)
-			// }
+			err = app.DSQL_CreateCluster(context.Background(), app.region, app.databases[index].Name, app.databases[index].DeleteProtection)
+			if err != nil {
+				app._logAndPrint("ERROR", "Failed to create cluster: %v", err)
+				os.Exit(1)
+			}
 		}
 		continue
 	}
@@ -234,6 +233,17 @@ func (app *Application) DSQL_RemoveDeleteProtection(ctx context.Context, region,
 }
 
 func (app *Application) DSQL_Report() {
+	var err error
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	_, err = app.DSQL_ListClusters(ctx, app.region)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to gather list of clusters: %v", err)
+		os.Exit(1)
+	}
+
 	fmt.Println("-------------------------------")
 	fmt.Println("C L U S T E R S   C R E A T E D")
 	fmt.Println("-------------------------------")
