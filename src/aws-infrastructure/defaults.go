@@ -6,3 +6,12 @@ func (app *Application) setDatabaseDefaults() {
 		app.databases[index].DeleteProtection = true
 	}
 }
+
+func (app *Application) setBucketDefaults() {
+	for index := range app.buckets {
+		app.buckets[index].Found = false
+		app.buckets[index].VersioningEnabled = false
+		app.buckets[index].LoggingEnabled = false
+		app.buckets[index].Encryption = "SE-S3"
+	}
+}

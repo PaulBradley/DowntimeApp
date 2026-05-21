@@ -2,6 +2,9 @@
 
 -include env.mk
 
+b:
+	go build -o provision *.go
+
 build:
 	go build -o provision *.go
 	./provision
