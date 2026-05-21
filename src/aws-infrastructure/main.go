@@ -58,7 +58,7 @@ func (app *Application) ProcessFlagOverrides() {
 }
 
 func (app *Application) Provision() {
-	app.DSQL_Provision()
+	// app.DSQL_Provision()
 	app.S3_Provision()
 }
 
@@ -74,7 +74,7 @@ func (app *Application) Report() {
 
 func (app *Application) Teardown() {
 	// app.DSQL_Teardown()
-	// app.S3_Teardown()
+	app.S3_Teardown()
 	app.LogFileClose()
 	os.Exit(0)
 }

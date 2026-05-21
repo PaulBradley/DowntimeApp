@@ -207,9 +207,6 @@ func (app *Application) DSQL_Provision() {
 		}
 		continue
 	}
-
-	time.Sleep(5 * time.Second)
-	app.DSQL_Report()
 }
 
 func (app *Application) DSQL_RemoveDeleteProtection(ctx context.Context, region, id string) (clusterStatus *dsql.UpdateClusterOutput, err error) {

@@ -9,11 +9,7 @@ type DSQL_database struct {
 }
 
 type S3_bucket struct {
-	ARN               string
-	DeleteProtection  bool
-	Encryption        string
-	Found             bool
-	LoggingEnabled    bool
-	Name              string
-	VersioningEnabled bool
+	ARN   string
+	Found bool
+	Name  string
 }

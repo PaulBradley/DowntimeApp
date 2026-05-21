@@ -69,6 +69,29 @@ func (app *Application) S3_CreateBucket(ctx context.Context, region string, name
 	return nil
 }
 
+func (app *Application) S3_DeleteBucket(ctx context.Context, region string, name string) error {
+	cfg := app.GetAWSConfig(ctx, region)
+	s3Client := s3.NewFromConfig(cfg)
+
+	_, err := s3Client.DeleteBucket(ctx, &s3.DeleteBucketInput{
+		Bucket: &name,
+	})
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to delete bucket: %v", err)
+		os.Exit(1)
+	}
+
+	waiter := s3.NewBucketNotExistsWaiter(s3Client)
+	if err := waiter.Wait(ctx, &s3.HeadBucketInput{Bucket: &name}, 2*time.Minute); err != nil {
+		app._logAndPrint("ERROR", "Failed waiting for bucket to be deleted: %v", err)
+		os.Exit(1)
+	}
+
+	app._logAndPrint("INFO", "Deleted Bucket: %s", name)
+
+	return nil
+}
+
 func (app *Application) S3_ListBuckets(ctx context.Context, region string) (buckets []string, err error) {
 
 	cfg := app.GetAWSConfig(ctx, region)
@@ -77,7 +100,8 @@ func (app *Application) S3_ListBuckets(ctx context.Context, region string) (buck
 
 	resp, err := s3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
 	if err != nil {
-		return nil, fmt.Errorf("Failed to list buckets: %w", err)
+		app._logAndPrint("ERROR", "Failed to list buckets: %v", err)
+		os.Exit(1)
 	}
 
 	buckets = make([]string, 0, len(resp.Buckets))
@@ -109,7 +133,7 @@ func (app *Application) S3_Provision() {
 
 	for index := range app.buckets {
 		if !app.buckets[index].Found {
-			app._logAndPrint("INFO", "Provisioning Bucket : %s", app.buckets[index].Name)
+			app._logAndPrint("INFO", "Provisioning Bucket: %s", app.buckets[index].Name)
 			err = app.S3_CreateBucket(ctx, app.region, app.buckets[index].Name)
 			if err != nil {
 				app._logAndPrint("ERROR", "Failed to create Bucket: %v", err)
@@ -118,9 +142,73 @@ func (app *Application) S3_Provision() {
 		}
 		continue
 	}
+}
 
-	time.Sleep(5 * time.Second)
-	app.S3_Report()
+func (app *Application) S3_PurgeObjects(name string) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	deleteObject := func(bucket, key, versionId *string) {
+		cfg := app.GetAWSConfig(ctx, app.region)
+		s3Client := s3.NewFromConfig(cfg)
+
+		app._logAndPrint("INFO", "Deleting object: %s/%s", *key, aws.ToString(versionId))
+		_, err := s3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+			Bucket:    bucket,
+			Key:       key,
+			VersionId: versionId,
+		})
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to delete object: %v", err)
+			os.Exit(1)
+		}
+	}
+
+	cfg := app.GetAWSConfig(ctx, app.region)
+	s3Client := s3.NewFromConfig(cfg)
+	in := &s3.ListObjectsV2Input{Bucket: &name}
+	for {
+		out, err := s3Client.ListObjectsV2(context.TODO(), in)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to list objects: %v", err)
+			os.Exit(1)
+		}
+
+		for _, item := range out.Contents {
+			deleteObject(&name, item.Key, nil)
+		}
+
+		if *out.IsTruncated {
+			in.ContinuationToken = out.ContinuationToken
+		} else {
+			break
+		}
+	}
+
+	inVer := &s3.ListObjectVersionsInput{Bucket: &name}
+	for {
+		out, err := s3Client.ListObjectVersions(context.TODO(), inVer)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to list version objects: %v", err)
+			os.Exit(1)
+		}
+
+		for _, item := range out.DeleteMarkers {
+			deleteObject(&name, item.Key, item.VersionId)
+		}
+
+		for _, item := range out.Versions {
+			deleteObject(&name, item.Key, item.VersionId)
+		}
+
+		if *out.IsTruncated {
+			inVer.VersionIdMarker = out.NextVersionIdMarker
+			inVer.KeyMarker = out.NextKeyMarker
+		} else {
+			break
+		}
+	}
 }
 
 func (app *Application) S3_Report() {
@@ -136,7 +224,7 @@ func (app *Application) S3_Report() {
 	}
 
 	fmt.Println("-------------------------------")
-	fmt.Println("B U C K E T S   C R E A T E D")
+	fmt.Println("B U C K E T S   C R E A T E D  ")
 	fmt.Println("-------------------------------")
 
 	for index := range app.buckets {
@@ -144,6 +232,28 @@ func (app *Application) S3_Report() {
 			fmt.Printf("Bucket Name : %s \n", app.buckets[index].Name)
 			fmt.Printf("Bucket ARN  : %s\n", app.buckets[index].ARN)
 			fmt.Println("-------------------------------")
+		}
+		continue
+	}
+}
+
+func (app *Application) S3_Teardown() {
+	var err error
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	_, err = app.S3_ListBuckets(ctx, app.region)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to list buckets: %v", err)
+		os.Exit(1)
+	}
+
+	for index := range app.buckets {
+		if app.buckets[index].Found {
+			app._logAndPrint("INFO", "Purging objects from Bucket : %s", app.buckets[index].Name)
+			app.S3_PurgeObjects(app.buckets[index].Name)
+			app.S3_DeleteBucket(ctx, app.region, app.buckets[index].Name)
 		}
 		continue
 	}
