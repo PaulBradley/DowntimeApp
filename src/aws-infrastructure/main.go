@@ -22,11 +22,13 @@ type Application struct {
 	databases []DSQL_database
 }
 
+var GIT_COMMIT_HASH string
+
 func main() {
 	app := Application{}
-	app._printHeader()
 	app._appSetup()
 	app._processFlags()
+	app._printHeader()
 
 	// S T A R T  O F  S E T U P
 	// define the AWS infrastructure to be

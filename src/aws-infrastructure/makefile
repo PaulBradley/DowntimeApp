@@ -1,18 +1,15 @@
-.DEFAULT_GOAL = build
+.DEFAULT_GOAL = status
 
 -include env.mk
 
-b:
-	go build -o provision *.go
+compile:
+	go build -ldflags="-w -s -X main.GIT_COMMIT_HASH=`git rev-parse HEAD`" -o provision *.go
 
-build:
-	go build -o provision *.go
+provision: compile
 	./provision
 
-status:
-	go build -o provision *.go
+status: compile
 	./provision -status
 
-teardown:
-	go build -o provision *.go
+teardown: compile
 	./provision -teardown

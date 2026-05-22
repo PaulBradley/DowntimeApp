@@ -39,6 +39,7 @@ func (app *Application) _printHeader() {
 	fmt.Println("===========================================")
 	fmt.Println()
 	app._logAndPrint("INFO", "Starting DowntimeApp AWS infrastructure provisioning")
+	app._logAndPrint("INFO", "Version (Git Commit Hash): %s", GIT_COMMIT_HASH)
 }
 
 func (app *Application) _processFlags() {
