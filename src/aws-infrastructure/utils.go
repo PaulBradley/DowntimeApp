@@ -14,6 +14,8 @@ func (app *Application) _appSetup() {
 	app.exe = path.Dir(os.Args[0])
 	app.ods = strings.ToLower(strings.TrimSpace(os.Getenv("ODS")))
 	app.teardown = false
+	app.dsqltimeout = 10 * time.Minute
+	app.dsqlwaiter_timeout = 2 * time.Minute
 	app.s3timeout = 10 * time.Minute
 	app.s3waiter_timeout = 2 * time.Minute
 	app.LogFileOpen()
