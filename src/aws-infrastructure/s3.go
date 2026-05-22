@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -38,7 +37,7 @@ func (app *Application) S3_CreateBucket(name string) error {
 	}
 
 	waiter := s3.NewBucketExistsWaiter(s3Client)
-	if err := waiter.Wait(ctx, &s3.HeadBucketInput{Bucket: &name}, 2*time.Minute); err != nil {
+	if err := waiter.Wait(ctx, &s3.HeadBucketInput{Bucket: &name}, app.s3waiter_timeout); err != nil {
 		return fmt.Errorf("Failed waiting for bucket to exist: %w", err)
 	}
 
@@ -88,7 +87,7 @@ func (app *Application) S3_DeleteBucket(name string) error {
 	}
 
 	waiter := s3.NewBucketNotExistsWaiter(s3Client)
-	if err := waiter.Wait(ctx, &s3.HeadBucketInput{Bucket: &name}, 2*time.Minute); err != nil {
+	if err := waiter.Wait(ctx, &s3.HeadBucketInput{Bucket: &name}, app.s3waiter_timeout); err != nil {
 		app._logAndPrint("ERROR", "Failed waiting for bucket to be deleted: %v", err)
 		os.Exit(1)
 	}

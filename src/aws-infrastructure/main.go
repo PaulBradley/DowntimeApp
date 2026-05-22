@@ -7,13 +7,14 @@ import (
 )
 
 type Application struct {
-	exe       string
-	logger    *os.File
-	ods       string
-	region    string
-	teardown  bool
-	status    bool
-	s3timeout time.Duration
+	exe              string
+	logger           *os.File
+	ods              string
+	region           string
+	teardown         bool
+	status           bool
+	s3timeout        time.Duration
+	s3waiter_timeout time.Duration
 
 	buckets   []S3_bucket
 	databases []DSQL_database
