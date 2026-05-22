@@ -13,6 +13,8 @@ type Application struct {
 	region    string
 	teardown  bool
 	status    bool
+	s3timeout time.Duration
+
 	buckets   []S3_bucket
 	databases []DSQL_database
 }

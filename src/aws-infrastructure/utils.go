@@ -7,12 +7,14 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 func (app *Application) _appSetup() {
 	app.exe = path.Dir(os.Args[0])
 	app.ods = strings.ToLower(strings.TrimSpace(os.Getenv("ODS")))
 	app.teardown = false
+	app.s3timeout = 10 * time.Minute
 	app.LogFileOpen()
 }
 
