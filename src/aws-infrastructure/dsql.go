@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -253,14 +254,49 @@ func (app *Application) DSQL_Report() {
 	fmt.Println("C L U S T E R S   C R E A T E D")
 	fmt.Println("-------------------------------")
 
+	var dsql_mk string
+
 	for index := range app.databases {
 		if app.databases[index].Found {
 			fmt.Printf("Cluster Name     : %s \n", app.databases[index].Name)
 			fmt.Printf("Cluster Endpoint : %s\n", app.databases[index].Endpoint)
 			fmt.Println("-------------------------------")
+
+			dsql_mk = dsql_mk + fmt.Sprintf("export %s=%s \n", app.databases[index].Name, app.databases[index].Endpoint)
 		}
 		continue
 	}
+
+	if dsql_mk == "" {
+		return
+	}
+
+	// Write the dsql.mk file with the cluster endpoints
+	// for use by the DSQL Schema creation application
+	var dsql_mk_filepath string
+	dsql_mk_filepath = strings.Replace(app.exe, ".", "../dsql-schema/", 1) + "dsql.mk"
+
+	if _, err := os.Stat(dsql_mk_filepath); err == nil {
+		err = os.Remove(dsql_mk_filepath)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to remove existing %s: %v", dsql_mk_filepath, err)
+			os.Exit(1)
+		}
+	}
+
+	file, err := os.OpenFile(dsql_mk_filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to open %s: %v", dsql_mk_filepath, err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	if _, err = file.WriteString(dsql_mk); err != nil {
+		app._logAndPrint("ERROR", "Failed to append dsql_mk content to %s: %v", dsql_mk_filepath, err)
+		os.Exit(1)
+	}
+
+	app._logAndPrint("INFO", "Cluster endpoints written to %s", dsql_mk_filepath)
 }
 
 func (app *Application) DSQL_Teardown() {
