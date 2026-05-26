@@ -12,6 +12,7 @@ A cloud-native downtime solution providing a critical backup solution for when k
 
 ## Progress
 
+- [2026-05-26](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-26&until=2026-05-26): Add initial SQL schema migration utility
 - [2026-05-23](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-23&until=2026-05-23): Write DSQL endpoints out to .mk file for the schema creation tool
 - [2026-05-22](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-22&until=2026-05-22): Refactored S3 & DSQL clients; updated makefile to inject Git commit hash into binary
 - [2026-05-21](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-21&until=2026-05-21): Added code to provision/teardown S3 buckets; added flag to just report status of AWS
