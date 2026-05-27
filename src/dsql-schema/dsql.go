@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	dta "github.com/awslabs/aurora-dsql-connectors/go/pgx/dsql"
 	"github.com/olekukonko/tablewriter"
@@ -35,12 +36,16 @@ func (app *Application) ApplyMigration(sql string) {
 		_, err = pool.Exec(ctx, statement)
 		if err != nil {
 			app._logAndPrint("ERROR", "Failed to execute migration statement %d: %v", i+1, err)
+			app._logAndPrint("ERROR", "SQL : %s", statement)
 			os.Exit(1)
 		}
 	}
 }
 
 func (app *Application) ListTables() {
+
+	app._logAndPrint("INFO", "Gathering table metrics")
+	time.Sleep(3 * time.Second)
 
 	var sql = `
 		SELECT
