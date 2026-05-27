@@ -10,6 +10,15 @@ A cloud-native downtime solution providing a critical backup solution for when k
 <img src="./docs/images/downtime-solution.jpg?raw=true" width="512" height="314" />
 
 
+---
+
+## Architecture Diagram
+
+Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/DowntimeApp/tree/main/src/aws-infrastructure) builds the AWS architecture detailed below. This allow health organisations to provision the infrastructure within their own AWS accounts if required.
+
+<img src="./docs/images/architecture-diagram.png?raw=true" width="892" height="388" />
+
+
 ## Progress
 
 - [2026-05-27](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-27&until=2026-05-27): Add `list-tables` option; support multi DDL statements; extended migrations
