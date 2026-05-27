@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"strconv"
+	"strings"
 
 	dta "github.com/awslabs/aurora-dsql-connectors/go/pgx/dsql"
 	"github.com/olekukonko/tablewriter"
@@ -24,11 +25,18 @@ func (app *Application) ApplyMigration(sql string) {
 	}
 	defer pool.Close()
 
-	_, err = pool.Exec(ctx, sql)
+	statements := strings.Split(sql, ";")
+	for i, statement := range statements {
+		statement = strings.TrimSpace(statement)
+		if statement == "" {
+			continue
+		}
 
-	if err != nil {
-		app._logAndPrint("ERROR", "Failed to execute migration %v", err)
-		os.Exit(1)
+		_, err = pool.Exec(ctx, statement)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to execute migration statement %d: %v", i+1, err)
+			os.Exit(1)
+		}
 	}
 }
 
