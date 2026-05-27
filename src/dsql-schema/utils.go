@@ -59,6 +59,7 @@ func (app *Application) _printMigrationMethod() {
 }
 
 func (app *Application) _processFlags() {
+	flag.BoolVar(&app.list_tables, "list-tables", false, "list tables and their row counts")
 	flag.BoolVar(&app.production, "production", false, "run the migration in production mode")
 	flag.BoolVar(&app.rollback, "rollback", false, "rollback the schema migrations")
 	flag.IntVar(&app.migration_id, "id", 0, "the migration id to upgrade/rollback to/from")

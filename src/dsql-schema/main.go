@@ -17,6 +17,7 @@ type Application struct {
 	dsql_timeout  time.Duration
 	exe           string
 	logger        *os.File
+	list_tables   bool
 	migration_id  int
 	ods           string
 	production    bool
@@ -34,8 +35,13 @@ func main() {
 	app._processFlags()
 	app._printHeader()
 	app._printDSQLEndpoint()
-	app._printMigrationMethod()
 
+	if app.list_tables {
+		app.ListTables()
+		os.Exit(0)
+	}
+
+	app._printMigrationMethod()
 	app.readMigrationFiles("./migrations/up/", 999)
 
 	if app.rollback {
