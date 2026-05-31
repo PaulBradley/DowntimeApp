@@ -15,15 +15,16 @@ type Migration struct {
 type Application struct {
 	dsql_endpoint string
 	dsql_timeout  time.Duration
+	environments  bool
 	exe           string
-	logger        *os.File
 	list_tables   bool
+	logger        *os.File
 	migration_id  int
+	migrations    []Migration
 	ods           string
 	production    bool
 	region        string
 	rollback      bool
-	migrations    []Migration
 }
 
 var GIT_COMMIT_HASH string
@@ -35,6 +36,11 @@ func main() {
 	app._processFlags()
 	app._printHeader()
 	app._printDSQLEndpoint()
+
+	if app.environments {
+		app._generateEnvironments()
+		os.Exit(0)
+	}
 
 	if app.list_tables {
 		app.ListTables()

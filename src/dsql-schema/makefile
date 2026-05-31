@@ -18,3 +18,6 @@ flatten: compile
 
 ls: compile
 	./schema --list-tables
+
+environments: compile
+	./schema --environments

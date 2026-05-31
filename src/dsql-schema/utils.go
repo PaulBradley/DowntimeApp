@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha512"
 	"flag"
 	"fmt"
 	"log"
@@ -18,6 +19,18 @@ func (app *Application) _appSetup() {
 	app.ods = strings.ToLower(strings.TrimSpace(os.Getenv("ODS")))
 	app.dsql_timeout = 10 * time.Minute
 
+}
+
+func (app *Application) _generateEnvironments() {
+	cellar := "01KSM3WRPK2D9K04RS92MBYSHT"
+	envs := []string{"PRODUCTION", "MOCK", "CERT", "TRAINING", "BUILD"}
+	salt := os.Getenv("SALT")
+
+	for _, env := range envs {
+		vault := fmt.Sprintf("%s%s%s", cellar, env, salt)
+		hash := strings.ToUpper(fmt.Sprintf("%x", sha512.Sum512([]byte(vault))))
+		fmt.Printf("INSERT INTO ENVIRONMENTS (cellar, vault, environment, is_enabled) VALUES ('%s', '%s', '%s', 'Y');\n", cellar, hash[:26], env)
+	}
 }
 
 func (app *Application) _logAndPrint(level, format string, args ...any) {
@@ -59,6 +72,7 @@ func (app *Application) _printMigrationMethod() {
 }
 
 func (app *Application) _processFlags() {
+	flag.BoolVar(&app.environments, "environments", false, "generate vault ids for a given cellar")
 	flag.BoolVar(&app.list_tables, "list-tables", false, "list tables and their row counts")
 	flag.BoolVar(&app.production, "production", false, "run the migration in production mode")
 	flag.BoolVar(&app.rollback, "rollback", false, "rollback the schema migrations")

@@ -1,4 +1,4 @@
-.DEFAULT_GOAL = status
+.DEFAULT_GOAL = provision
 
 -include env.mk
 
