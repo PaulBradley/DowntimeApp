@@ -21,3 +21,7 @@ ls: compile
 
 environments: compile
 	./schema --environments
+
+data: compile
+	./schema -id=49 --rollback
+	./schema -id=50

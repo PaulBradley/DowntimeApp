@@ -9,3 +9,19 @@ INSERT INTO ENVIRONMENTS (cellar, vault, environment, is_enabled) VALUES ('01KSM
 
 INSERT INTO FACILITIES (cellar, institution) VALUES ('01KSM3WRPK2D9K04RS92MBYSHT', 'Holby City Hospital');
 INSERT INTO FACILITIES (cellar, institution) VALUES ('01KSM3WRPK2D9K04RS92MBYSHT', 'Wyvern District Hospital');
+
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 1, 'AE', 'Accident & Emergency');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 2, 'MAU', 'Medical Assessment Unit');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 3, 'WARD1', 'Ward 1');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 4, 'WARD2', 'Ward 2');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 5, 'WARD3', 'Ward 3');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 6, 'WARD4', 'Ward 4');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (1, 7, 'WARD5', 'Ward 5');
+
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 1, 'MU', 'Maternity Unit');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 2, 'SCBU', 'Special Care Baby Unit');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 3, 'WARD1', 'Ward 1');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 4, 'WARD3', 'Ward 3');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 5, 'WARD3', 'Ward 4');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 6, 'WARD4', 'Ward 5');
+INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 7, 'WARD6', 'Ward 6');
