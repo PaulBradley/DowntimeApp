@@ -21,6 +21,7 @@ Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/Down
 
 ## Progress
 
+- [2026-05-30](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-30&until=2026-05-30): Add `environments` option; extended schema
 - [2026-05-27](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-27&until=2026-05-27): Add `list-tables` option; support multi DDL statements; extended migrations
 - [2026-05-26](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-26&until=2026-05-26): Add initial SQL schema migration utility
 - [2026-05-23](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-23&until=2026-05-23): Write DSQL endpoints out to .mk file for the schema creation tool
