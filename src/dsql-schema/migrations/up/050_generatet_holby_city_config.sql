@@ -1,4 +1,3 @@
-
 INSERT INTO ORGANISATIONS (ods, cellar, organisation) VALUES ('HCH01', '01KSM3WRPK2D9K04RS92MBYSHT', 'Holby City NHS Foundation Trust');
 
 INSERT INTO ENVIRONMENTS (cellar, vault, environment, is_enabled) VALUES ('01KSM3WRPK2D9K04RS92MBYSHT', '1B4E3DF588D92ED9A63DCE0016', 'PRODUCTION', 'Y');
@@ -25,3 +24,9 @@ INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_nam
 INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 5, 'WARD3', 'Ward 4');
 INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 6, 'WARD4', 'Ward 5');
 INSERT INTO PRACTICE_SETTING (facility_id, sort_order, setting_code, setting_name) VALUES (2, 7, 'WARD6', 'Ward 6');
+
+INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', 1, '0000094Y', 'John', 'Smith', NOW()  - INTERVAL '45 minutes');
+INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', 1, '1234567A', 'Hadley', 'Bradley', NOW()  - INTERVAL '34 minutes');
+INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', 1, '9081723Z', 'Constance', 'Noring', NOW()  - INTERVAL '20 minutes');
+INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', 1, '7777777Q', 'Melody', 'Sunshine', NOW()  - INTERVAL '16 minutes');
+INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', 1, '5647382M', 'Donald', 'Canard', NOW()  - INTERVAL '5 minutes');
