@@ -23,5 +23,5 @@ environments: compile
 	./schema --environments
 
 data: compile
-	./schema -id=49 --rollback
-	./schema -id=50
+	./schema -id=50 --just --rollback
+	./schema -id=50 --just

@@ -73,6 +73,7 @@ func (app *Application) _printMigrationMethod() {
 
 func (app *Application) _processFlags() {
 	flag.BoolVar(&app.environments, "environments", false, "generate vault ids for a given cellar")
+	flag.BoolVar(&app.just, "just", false, "only execute the one migration id supplied")
 	flag.BoolVar(&app.list_tables, "list-tables", false, "list tables and their row counts")
 	flag.BoolVar(&app.production, "production", false, "run the migration in production mode")
 	flag.BoolVar(&app.rollback, "rollback", false, "rollback the schema migrations")

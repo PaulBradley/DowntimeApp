@@ -17,6 +17,7 @@ type Application struct {
 	dsql_timeout  time.Duration
 	environments  bool
 	exe           string
+	just          bool
 	list_tables   bool
 	logger        *os.File
 	migration_id  int
@@ -57,6 +58,9 @@ func main() {
 	}
 
 	for _, migration := range app.migrations {
+		if app.just && migration.id != app.migration_id {
+			continue
+		}
 		if app.rollback && migration.id < app.migration_id {
 			continue
 		}
