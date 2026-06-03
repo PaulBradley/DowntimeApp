@@ -21,6 +21,7 @@ Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/Down
 
 ## Progress
 
+- [2026-06-03](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-03&until=2026-06-03): Initial commit for dumping SQL schema for DMML documentation
 - [2026-06-02](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-01&until=2026-06-02): Add `just` option to run a singular migration; extended database schema
 - [2026-05-31](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-31&until=2026-05-31): Add `environments` option; extended database schema
 - [2026-05-27](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-05-27&until=2026-05-27): Add `list-tables` option; support multi DDL statements; extended migrations

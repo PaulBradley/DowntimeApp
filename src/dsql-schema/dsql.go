@@ -42,6 +42,49 @@ func (app *Application) ApplyMigration(sql string) {
 	}
 }
 
+func (app *Application) GetTableComment(tableName string) string {
+	var data strings.Builder
+	var sql string = ""
+
+	ctx, cancel := context.WithTimeout(context.Background(), app.dsql_timeout)
+	defer cancel()
+
+	sql = `SELECT obj_description('public.` + tableName + `'::regclass, 'pg_class');`
+
+	pool, err := dta.NewPool(ctx, dta.Config{
+		Host: app.dsql_endpoint,
+	})
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to create DSQL connection pool: %v", err)
+		os.Exit(1)
+	}
+	defer pool.Close()
+
+	rows, err := pool.Query(ctx, sql)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to query tables %v", err)
+		os.Exit(1)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tableComment string
+		err := rows.Scan(&tableComment)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to scan row: %v", err)
+			continue
+		}
+
+		data.WriteString(tableComment + "\n\n")
+	}
+
+	if err := rows.Err(); err != nil {
+		app._logAndPrint("ERROR", "Error iterating over rows: %v", err)
+	}
+
+	return data.String()
+}
+
 func (app *Application) ListTables() {
 
 	app._logAndPrint("INFO", "Gathering table metrics")
@@ -108,4 +151,85 @@ func (app *Application) ListTables() {
 	table.Header(data[0])
 	table.Bulk(data[1:])
 	table.Render()
+
+	app.SchemaDBML()
+}
+
+func (app *Application) SchemaDBML() {
+	var DBML strings.Builder
+	var sql string = ""
+
+	app._logAndPrint("INFO", "Generating DBML schema file")
+	ctx, cancel := context.WithTimeout(context.Background(), app.dsql_timeout)
+	defer cancel()
+
+	sql = `
+		SELECT table_name
+		  FROM information_schema.columns
+		 WHERE table_schema = 'public'
+		 GROUP BY table_name
+		 ORDER BY table_name`
+
+	pool, err := dta.NewPool(ctx, dta.Config{
+		Host: app.dsql_endpoint,
+	})
+
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to create DSQL connection pool: %v", err)
+		os.Exit(1)
+	}
+	defer pool.Close()
+
+	rows, err := pool.Query(ctx, sql)
+
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to query tables %v", err)
+		os.Exit(1)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tableName string
+		err := rows.Scan(&tableName)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to scan row: %v", err)
+			continue
+		}
+
+		DBML.WriteString("\nTable " + tableName + " {\n")
+		DBML.WriteString("}\n\n")
+		DBML.WriteString(app.GetTableComment(tableName) + "\n\n")
+	}
+
+	if err := rows.Err(); err != nil {
+		app._logAndPrint("ERROR", "Error iterating over rows: %v", err)
+	}
+
+	app.WriteDBML(DBML.String())
+}
+
+func (app *Application) WriteDBML(content string) {
+	var dbml_filepath string
+	dbml_filepath = app.dsql_endpoint + "-dbml.md"
+
+	if _, err := os.Stat(dbml_filepath); err == nil {
+		err = os.Remove(dbml_filepath)
+		if err != nil {
+			app._logAndPrint("ERROR", "Failed to remove existing %s: %v", dbml_filepath, err)
+			os.Exit(1)
+		}
+	}
+
+	file, err := os.OpenFile(dbml_filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to open %s: %v", dbml_filepath, err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(content)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to write to %s: %v", dbml_filepath, err)
+		os.Exit(1)
+	}
 }
