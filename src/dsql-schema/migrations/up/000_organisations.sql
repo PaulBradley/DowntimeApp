@@ -6,3 +6,11 @@ CREATE TABLE IF NOT EXISTS organisations (
 );
 
 CREATE INDEX ASYNC IF NOT EXISTS idx_organisations_cellar ON organisations (cellar);
+
+COMMENT ON  TABLE organisations IS '
+// As Amazon Aurora DSQL does not support foreign key constraints, adding
+// DBML (https://dbml.dbdiagram.io/docs) hints as comments to indicate
+// relationships between tables for documentation purposes.
+
+Ref: organisations.cellar < facilities.cellar
+';

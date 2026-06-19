@@ -11,3 +11,12 @@ CREATE TABLE IF NOT EXISTS patients (
 
 CREATE INDEX ASYNC IF NOT EXISTS idx_patients_vault_mrn ON patients (vault, mrn);
 CREATE INDEX ASYNC IF NOT EXISTS idx_patients_vault_practice_setting_family_name ON patients (vault, practice_setting_id, family_name);
+
+COMMENT ON  TABLE patients IS '
+// As Amazon Aurora DSQL does not support foreign key constraints, adding
+// DBML (https://dbml.dbdiagram.io/docs) hints as comments to indicate
+// relationships between tables for documentation purposes.
+
+Ref: patients.practice_setting_id > practice_settings.id
+Ref: patients.vault > environments.vault
+';

@@ -16,5 +16,5 @@ COMMENT ON  TABLE environments IS '
 // DBML (https://dbml.dbdiagram.io/docs) hints as comments to indicate
 // relationships between tables for documentation purposes.
 
-Ref: environments.cellar < organisations.cellar
+Ref: environments.cellar > organisations.cellar
 ';

@@ -9,3 +9,12 @@ CREATE TABLE IF NOT EXISTS practice_settings (
 );
 
 CREATE INDEX ASYNC IF NOT EXISTS idx_practice_settings_facility_id_sort_order ON practice_settings (facility_id, sort_order);
+
+
+COMMENT ON  TABLE practice_settings IS '
+// As Amazon Aurora DSQL does not support foreign key constraints, adding
+// DBML (https://dbml.dbdiagram.io/docs) hints as comments to indicate
+// relationships between tables for documentation purposes.
+
+Ref: practice_settings.facility_id > facilities.id
+';

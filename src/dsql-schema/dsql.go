@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	dta "github.com/awslabs/aurora-dsql-connectors/go/pgx/dsql"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -49,7 +51,7 @@ func (app *Application) GetTableComment(tableName string) string {
 	ctx, cancel := context.WithTimeout(context.Background(), app.dsql_timeout)
 	defer cancel()
 
-	sql = `SELECT obj_description('public.` + tableName + `'::regclass, 'pg_class');`
+	sql = `SELECT COALESCE(obj_description('public.` + tableName + `'::regclass, 'pg_class'), '') AS table_comment;`
 
 	pool, err := dta.NewPool(ctx, dta.Config{
 		Host: app.dsql_endpoint,
@@ -88,7 +90,7 @@ func (app *Application) GetTableComment(tableName string) string {
 func (app *Application) ListTables() {
 
 	app._logAndPrint("INFO", "Gathering table metrics")
-	time.Sleep(3 * time.Second)
+	// time.Sleep(3 * time.Second)
 
 	var sql = `
 		SELECT
@@ -164,7 +166,7 @@ func (app *Application) SchemaDBML() {
 	defer cancel()
 
 	sql = `
-		SELECT table_name
+		SELECT COALESCE(table_name, '') AS table_name
 		  FROM information_schema.columns
 		 WHERE table_schema = 'public'
 		 GROUP BY table_name
@@ -197,6 +199,98 @@ func (app *Application) SchemaDBML() {
 		}
 
 		DBML.WriteString("\nTable " + tableName + " {\n")
+
+		Fields := app.GetRows(pool, `
+		  SELECT
+				column_name,
+				data_type,
+				COALESCE(character_maximum_length::text, '') AS character_maximum_length,
+				COALESCE(is_nullable::text, '') AS is_nullable,
+				COALESCE(is_identity::text, '') AS is_identity
+				
+			FROM information_schema.columns
+			WHERE table_schema = 'public'
+			AND table_name = '`+tableName+`'`)
+
+		for Fields.Next() {
+			var columnName string
+			var dataType string
+			var Length string
+			var isNullable string
+			var isIdentity string
+
+			err := Fields.Scan(&columnName, &dataType, &Length, &isNullable, &isIdentity)
+			if err != nil {
+				app._logAndPrint("ERROR", "Failed to scan field: %v", err)
+				continue
+			}
+
+			if dataType == "character" {
+				dataType = "char"
+			}
+			if dataType == "character varying" {
+				dataType = "varchar"
+			}
+			if strings.Contains(dataType, "timestamp") {
+				dataType = "datetime"
+			}
+			if Length != "" {
+				Length = "(" + Length + ")"
+			}
+
+			options := "["
+
+			if len(isNullable) > 0 && isNullable == "NO" {
+				options += "not null, "
+			} else {
+				options += "null, "
+			}
+
+			if len(isIdentity) > 0 && isIdentity == "YES" {
+				options += "increment, "
+			} else {
+				options += "  "
+			}
+
+			Uniques := app.GetRows(pool, `
+				SELECT
+					COUNT(*) AS Total
+				FROM
+					information_schema.table_constraints tc
+				JOIN
+					information_schema.key_column_usage kcu
+				ON
+					tc.constraint_name = kcu.constraint_name
+				WHERE
+					tc.table_schema = 'public'
+					AND tc.table_name = '`+tableName+`'
+					AND kcu.column_name = '`+columnName+`'
+					AND tc.constraint_type = 'PRIMARY KEY';`)
+
+			for Uniques.Next() {
+				var Total int
+				err := Uniques.Scan(&Total)
+				if err != nil {
+					app._logAndPrint("ERROR", "Failed to scan unique constraint: %v", err)
+					continue
+				}
+
+				if Total > 0 {
+					options += "unique, "
+				}
+			}
+			Uniques.Close()
+
+			options = strings.TrimSpace(options)
+			if options[len(options)-2:] == ", " {
+				fmt.Println("Adding /" + options + "/")
+				options += ", "
+			}
+
+			DBML.WriteString("  " + columnName + " " + dataType + " " + Length + " " + options + " note: '']\n")
+		}
+		Fields.Close()
+
 		DBML.WriteString("}\n\n")
 		DBML.WriteString(app.GetTableComment(tableName) + "\n\n")
 	}
@@ -232,4 +326,18 @@ func (app *Application) WriteDBML(content string) {
 		app._logAndPrint("ERROR", "Failed to write to %s: %v", dbml_filepath, err)
 		os.Exit(1)
 	}
+}
+
+func (app *Application) GetRows(pool *pgxpool.Pool, sql string) pgx.Rows {
+
+	ctx, cancel := context.WithTimeout(context.Background(), app.dsql_timeout)
+	defer cancel()
+
+	rows, err := pool.Query(ctx, sql)
+	if err != nil {
+		app._logAndPrint("ERROR", "Failed to execute query: %v", err)
+		os.Exit(1)
+	}
+
+	return rows
 }
