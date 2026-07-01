@@ -21,6 +21,7 @@ Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/Down
 
 ## Progress
 
+- [2026-07-01](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-07-01&until=2026-07-01): Add application to launch the web application passing a users context via a JWT token
 - [2026-06-19](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-19&until=2026-06-19): Completed function to generate schema documentation from DSQL schema
 - [2026-06-03](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-03&until=2026-06-03): Initial commit for dumping SQL schema for DBML documentation
 - [2026-06-02](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-01&until=2026-06-02): Add `just` option to run a singular migration; extended database schema
