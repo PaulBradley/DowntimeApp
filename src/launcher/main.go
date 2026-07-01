@@ -80,7 +80,7 @@ func main() {
 			fmt.Println("------------")
 			fmt.Println(tokenString)
 			fmt.Println("------------")
-			os.Exit(0)
+			// os.Exit(0)
 		}
 	}
 

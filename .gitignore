@@ -1,7 +1,11 @@
-# logs
 *.mk
 *.log
 
 # binaries
-provision
-schema
+src/aws-infrastructure/provision
+src/dsql-schema/schema
+src/launcher/launcher
+src/launcher/builds/*
+src/launcher/secrets.go
+src/frontend/main.zip
+src/frontend/bootstrap
