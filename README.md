@@ -18,9 +18,9 @@ Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/Down
 
 <img src="./docs/images/architecture-diagram.png?raw=true" width="892" height="388" />
 
-
 ## Progress
 
+- [2026-08-30](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-08-30&until=2026-08-08): Update database SQL schema
 - 2026-08-**: Sabbatical to research DICOM options for Go, converting to web friendly images
 - [2026-07-01](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-07-01&until=2026-07-01): Add application to launch the web application passing a users context via a JWT token. Started frontend application.
 - [2026-06-19](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-06-19&until=2026-06-19): Completed function to generate schema documentation from DSQL schema
