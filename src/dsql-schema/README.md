@@ -4,4 +4,4 @@ The database schema tools handle processing the `migrations/` either up or down 
 
 The tools also generates our schema relationship diagram directly from the database:
 
-<img src="../../docs/images/schema-diagram.png?raw=true" width="589" height="214" />
+<img src="../../docs/images/schema-diagram.png?raw=true" />
