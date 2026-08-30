@@ -6,7 +6,7 @@
 compile:
 	go build -ldflags="-w -s -X main.GIT_COMMIT_HASH=`git rev-parse HEAD`" -o schema *.go
 
-run: compile
+run: compile flatten
 	./schema -id=999
 	./schema --list-tables
 

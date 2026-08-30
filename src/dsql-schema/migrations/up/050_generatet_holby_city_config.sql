@@ -29,3 +29,5 @@ INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, 
 INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', (SELECT id FROM practice_settings ORDER BY facility_id, sort_order LIMIT 1), '9081723Z', 'Constance', 'Noring', NOW()  - INTERVAL '20 minutes');
 INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', (SELECT id FROM practice_settings ORDER BY facility_id, sort_order LIMIT 1), '7777777Q', 'Melody', 'Sunshine', NOW()  - INTERVAL '16 minutes');
 INSERT INTO PATIENTS (vault, practice_setting_id, mrn, given_name, family_name, admission_date_time) VALUES ('4DED63CFF6D4773B0D66358754', (SELECT id FROM practice_settings ORDER BY facility_id, sort_order LIMIT 1), '5647382M', 'Donald', 'Canard', NOW()  - INTERVAL '5 minutes');
+
+INSERT INTO USERS (cellar, subject, email, family_name, given_name) VALUES ('01KSM3WRPK2D9K04RS92MBYSHT', 'BRADLEYP6', 'donald.canard@example.com', 'Canard', 'Donald');
