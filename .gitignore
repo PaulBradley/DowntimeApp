@@ -1,6 +1,9 @@
 *.mk
 *.log
 
+# research
+docs/research/*
+
 # binaries
 src/aws-infrastructure/provision
 src/dsql-schema/schema
