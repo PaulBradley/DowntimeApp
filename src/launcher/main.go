@@ -75,11 +75,15 @@ func main() {
 		log.Fatalf("Failed to validate JWT token: %v", err)
 	} else {
 		if jot.hostname == "PWC908976A" {
-			fmt.Println(string(SIGNING_KEY))
-			fmt.Println(claims["jti"])
+			fmt.Println("SIGNING KEY: ", string(SIGNING_KEY))
+			fmt.Println("TRANSACTION: ", claims["jti"])
 			fmt.Println("------------")
 			fmt.Println(tokenString)
 			fmt.Println("------------")
+			fmt.Println("TOKEN LENGTH: ", len(tokenString))
+			if isValidULID(claims["jti"].(string)) {
+				fmt.Println("TRANSACTION HAS A VALID ULID: ", claims["jti"])
+			}
 			// os.Exit(0)
 		}
 	}
@@ -161,14 +165,6 @@ func getHostname() string {
 	}
 
 	return strings.ToUpper(hn)
-}
-
-func deriveKey() string {
-	runes := []rune(CELLAR)
-	for left, right := 0, len(runes)-1; left < right; left, right = left+1, right-1 {
-		runes[left], runes[right] = runes[right], runes[left]
-	}
-	return string(runes)
 }
 
 func parseAndValidateToken(tokenString string) (*jwt.Token, jwt.MapClaims, error) {

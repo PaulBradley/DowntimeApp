@@ -20,6 +20,7 @@ Our [cloud infrastructure provisioning tool](https://github.com/PaulBradley/Down
 
 ## Progress
 
+- [2026-09-02](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-09-02&until=2026-09-02): Update `launcher`
 - [2026-08-30](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-08-30&until=2026-08-30): Update database SQL schema
 - 2026-08-**: Sabbatical to research DICOM options for Go, converting to web friendly images
 - [2026-07-01](https://github.com/PaulBradley/DowntimeApp/commits/main?since=2026-07-01&until=2026-07-01): Add application to launch the web application passing a users context via a JWT token. Started frontend application.

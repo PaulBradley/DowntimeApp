@@ -7,8 +7,9 @@ docs/research/*
 # binaries
 src/aws-infrastructure/provision
 src/dsql-schema/schema
-src/launcher/launcher
 src/launcher/builds/*
+src/launcher/launcher
 src/launcher/secrets.go
-src/frontend/main.zip
 src/frontend/bootstrap
+src/frontend/main.zip
+src/frontend/secrets.go
